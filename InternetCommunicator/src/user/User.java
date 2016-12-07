@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
+import archive.Archive;
 import contactList.ClWriter;
 import contactList.ContactList;
 
@@ -11,18 +12,24 @@ public class User {
  
 	private final long ID;
 	private static long nextID = 1;
-	private String nazwa;
+	private String name;
 	private File myUserDirectory;
+	private File archiveDirectory;
 	private String defaultUserPath;;
 	private ContactList myList;
+	private Archive myArchive;
 	
-	public User(String nazwa) throws IOException{	
-		this.nazwa = nazwa;
+	public User(String name) throws IOException{	
+		this.name = name;
 		this.ID = updateID();
-		defaultUserPath = "C:\\Users\\Public\\Documents\\Communicator\\" + nazwa + "_" +Long.toString(ID);
+		defaultUserPath = "C:\\Users\\Public\\Documents\\Communicator\\" + name + "_" +Long.toString(ID);
 		myUserDirectory = new File(defaultUserPath);
 		createIfNotExists(myUserDirectory);
 		myList = new ContactList(myUserDirectory);
+		
+		archiveDirectory = new File(defaultUserPath + "\\Archive");
+		archiveDirectory.mkdir();
+		myArchive = new Archive(archiveDirectory);
 		
 	}
 	
@@ -41,9 +48,20 @@ public class User {
 	 * 
 	 * @return, long, next unique user ID
 	 */
-	public static long updateID() {
+	private static long updateID() {
 		nextID++;
 		return nextID;
 	}
 	
+	public String getName(){
+		return name;
+	}
+	
+	public Archive getArchive(){
+		return myArchive;
+	}
+	
+	public ContactList getContactList(){
+		return myList;
+	}
 }
