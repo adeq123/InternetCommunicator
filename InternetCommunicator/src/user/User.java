@@ -28,7 +28,6 @@ public class User {
 		myList = new ContactList(myUserDirectory);
 		
 		archiveDirectory = new File(defaultUserPath + "\\Archive");
-		archiveDirectory.mkdir();
 		myArchive = new Archive(archiveDirectory);
 		
 	}

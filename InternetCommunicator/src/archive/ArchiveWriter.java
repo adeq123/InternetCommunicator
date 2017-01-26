@@ -24,10 +24,18 @@ public class ArchiveWriter implements Writer{
 	 * @param newTalk, a String, an update to the String
 	 */
 	public void addNewTalk(String ID, String newTalk) throws IOException {
+		
+		File newArchive = new File(archiveDirectory.getAbsolutePath() + "//" + ID + ".txt");
+		
+		if(!newArchive.exists())
+			newArchive.createNewFile();
+		
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(archiveDirectory.getAbsolutePath() + "//" + ID + ".txt")));
+				new FileOutputStream(newArchive)));
+		
 		writer.write(newTalk);
 		writer.close();
+		
 	}
 
 	/**
