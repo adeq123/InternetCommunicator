@@ -31,8 +31,8 @@ public class ArchiveWriter implements Writer{
 			newArchive.createNewFile();
 		
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(newArchive)));
-		
+				new FileOutputStream(newArchive, true)));
+	
 		writer.write(newTalk);
 		writer.close();
 		

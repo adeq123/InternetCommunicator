@@ -23,7 +23,7 @@ public class ArchiveWriterTest {
 	
 	String ID;
 	String messeageOne;
-	String messageTwo;
+	String messeageTwo;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -31,13 +31,14 @@ public class ArchiveWriterTest {
 		archiveOnePath = "C:\\test\\archiveOne";
 		ID = "GNPI";
 		messeageOne = "Siema";
-		messageTwo = "pzdr";		
+		messeageTwo = "pzdr";		
 		
 		archiveOneFile = new File(archiveOnePath);
 		if(!archiveOneFile.exists())
 			archiveOneFile.mkdirs();
 		testArchiveOne = new ArchiveWriter(archiveOneFile);	
-		testArchiveOne.addNewTalk(ID, messeageOne);
+		
+		
 		testFile = new File(archiveOneFile.getAbsolutePath() + "//" + ID + ".txt");
 	}
 
@@ -51,7 +52,7 @@ public class ArchiveWriterTest {
 	@Test
 	public void testAddingNewTalks() {
 		try {
-			
+			testArchiveOne.addNewTalk(ID, messeageOne);
 			BufferedReader czytaj = new BufferedReader(new FileReader(testFile.getAbsolutePath()));
 			assertTrue(messeageOne.equals(czytaj.readLine()));
 			czytaj.close();
@@ -64,7 +65,25 @@ public class ArchiveWriterTest {
 		
 	}
 	
-	@After
+	@Test 
+	public void testSecondTalk() {
+		try {
+			testArchiveOne.addNewTalk(ID, messeageTwo);
+			BufferedReader czytaj = new BufferedReader(new FileReader(testFile.getAbsolutePath()));
+			messeageTwo += messeageOne;
+			System.out.println(czytaj.readLine());
+			assertTrue(messeageTwo.equals(czytaj.readLine()));
+			czytaj.close();
+		} catch (IOException e) {
+			
+			System.out.println("Problem with reading the archive txt file");
+			e.printStackTrace();
+			
+		}
+		
+	}
+	
+	/*@After
 	public void tearDown() throws Exception {
 		delete(archiveOneFile) ;
 	}
@@ -73,7 +92,7 @@ public class ArchiveWriterTest {
 	 * Deletes the folder recursively
 	 * @param f, File to be deleted
 	 * @throws IOException
-	 */
+	 *
 	void delete(File f) throws IOException {
 		  if (f.isDirectory()) {
 		    for (File c : f.listFiles())
@@ -82,6 +101,6 @@ public class ArchiveWriterTest {
 		  if (!f.delete())
 		    throw new FileNotFoundException("Failed to delete file: " + f);
 		}
-	
+	*/
 
 }
