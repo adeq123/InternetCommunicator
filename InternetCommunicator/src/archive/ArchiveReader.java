@@ -20,11 +20,11 @@ public class ArchiveReader implements Reader {
 	 * which archive is to be read
 	 * @throws IOException 
 	 */
-	public String getArchive(String ID) throws IOException {
+	public String getArchiveContent(String ID) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(archiveDirectory.getAbsolutePath() + "//" + ID + ".txt"));
 		String archive = "";
 		String line;
-		
+	
 		while((line = reader.readLine()) != null)
 			archive += line;
 		

@@ -33,7 +33,7 @@ public class ArchiveWriter implements Writer{
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream(newArchive, true)));
 	
-		writer.write(newTalk);
+		writer.write(newTalk + System.lineSeparator());
 		writer.close();
 		
 	}

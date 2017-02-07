@@ -10,14 +10,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class ClWriter implements Writer{
 
 	private File contactList;
 	
 	public ClWriter(File contactList){
-		
+	
 		this.contactList = contactList;
 		
 	}
@@ -29,7 +31,8 @@ public class ClWriter implements Writer{
 	 */
 	public void addContact(String name, String ID) throws IOException {
 		
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(contactList.getAbsolutePath())));
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new
+				FileOutputStream(contactList.getAbsolutePath(),true)));
 		writer.write(name + " " + ID);
 		writer.newLine();
 		writer.close();
@@ -50,15 +53,15 @@ public class ClWriter implements Writer{
 		while((line = reader.readLine()) != null){
 			if(!line.split(" ")[1].equals(ID)){
 				newContactList.add(line);
+				
 			}
 		}
 		reader.close();
-		
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(contactList.getAbsolutePath())));
 		//write the updated contact list to the file
-		
-		while(newContactList.iterator().hasNext()){	
-			writer.write(newContactList.iterator().next());
+		Iterator<String> ContactListIterator = newContactList.iterator();
+ 		while(ContactListIterator.hasNext()){	
+			writer.write(ContactListIterator.next());
 			writer.newLine();
 		}
 		
@@ -81,18 +84,16 @@ public class ClWriter implements Writer{
 		while((line = reader.readLine()) != null){
 			if(line.split(" ")[1].equals(ID)){
 				newContactList.add(newName + " " + ID);
-			}
-			newContactList.add(line);
+			}else
+				newContactList.add(line);
 		}
 		reader.close();
-		
-		deleteListContent();
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(contactList.getAbsolutePath())));
 		
 		//write the updated contact list to the file
-		while(newContactList.iterator().hasNext()){
-			
-			writer.write(newContactList.iterator().next());
+		Iterator<String> ContactListIterator = newContactList.iterator();
+		while(ContactListIterator.hasNext()){
+			writer.write(ContactListIterator.next());
 			writer.newLine();
 		}
 		
@@ -118,6 +119,7 @@ public class ClWriter implements Writer{
 					return true;
 				}	
 			}
+			reader.close();
 			return false;
 
 		}

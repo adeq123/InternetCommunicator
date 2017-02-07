@@ -5,5 +5,5 @@ import java.io.IOException;
 
 public interface Reader {
 
-	public abstract String getArchive(String ID) throws FileNotFoundException, IOException;
+	public abstract String getArchiveContent(String ID) throws FileNotFoundException, IOException;
 }

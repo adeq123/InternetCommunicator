@@ -3,6 +3,8 @@ package archiveTests;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,26 +14,45 @@ import archive.Archive;
 
 public class ArchiveTest {
 	
-	String archiveOnePath;
-	String archiveTwoPath;
-	
+	File testDir ;
+	File archiveFile;
+	File testFile;
+	String archivePath;
+	Archive testArchive;
 	@Before
 	public void setUp() throws Exception {
 		
-		archiveOnePath = "";
-		archiveTwoPath = "";
-		
-		Archive testArchiveOne = new Archive(new File(archiveOnePath));
-		Archive testArchiveTwo = new Archive(new File(archiveTwoPath));
-	}
-
-	@After
-	public void tearDown() throws Exception {
+		testDir = new File("C://test");
+		archivePath = testDir.getAbsolutePath() + "//archiveOne";
+		archiveFile = new File(archivePath);
+		testArchive = new Archive(archiveFile);
 	}
 
 	@Test
-	public void test() {
-		fail("Not yet implemented");
+	public void testIfWriterReaderWereCreated() {
+		assertTrue(testArchive.getArchiveReader()!=null && testArchive.getArchiveWriter()!=null);
 	}
+
+	@After
+	public void deleteAllTestFiles() throws Exception {
+		delete(testDir) ;
+		
+	}
+	
+	
+	 /** Deletes the folder recursively
+	 * @param f, File to be deleted
+	 * @throws IOException
+	 */
+	void delete(File f) throws IOException {
+		  if (f.isDirectory()) {
+		    for (File c : f.listFiles())
+		      delete(c);
+		  }
+		  if (!f.delete())
+		    throw new FileNotFoundException("Failed to delete file: " + f);
+		}
+
+
 
 }
