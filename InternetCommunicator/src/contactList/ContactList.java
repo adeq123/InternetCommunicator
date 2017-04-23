@@ -15,7 +15,7 @@ public class ContactList {
 	public ContactList(File myUserDirectory) throws IOException {
 
 		this.mainFolder = myUserDirectory;
-		this.contactList = new File(myUserDirectory.getAbsolutePath() + "ContactList.txt");
+		this.contactList = new File(myUserDirectory.getAbsolutePath() + "\\ContactList.txt");
 		contactList.createNewFile();
 		myWriter = new ClWriter(this.contactList);
 		myReader = new ClReader(this.contactList);

@@ -9,9 +9,14 @@ import contactList.ClWriter;
 import contactList.ContactList;
 import db.DB;
 
+/**
+ * This class is an abstract model of user which is resposible for it's comuncation with local data like contact list, archive etc.
+ * @author RoguskiA
+ *
+ */
 public class User {
  
-	private final long ID;
+	public final long ID;
 	private static long nextID = 1;
 	private String name;
 	private File myUserDirectory;
@@ -19,7 +24,7 @@ public class User {
 	private String defaultUserPath;;
 	private ContactList myList;
 	private Archive myArchive;
-	private DB database;
+
 	
 	public User(String name) throws IOException{	
 		this.name = name;
@@ -31,8 +36,7 @@ public class User {
 		
 		archiveDirectory = new File(defaultUserPath + "\\Archive");
 		myArchive = new Archive(archiveDirectory);
-		database = new DB();
-		database.addUser(Long.toString(ID), name);
+
 	}
 	
 	/**
@@ -67,7 +71,5 @@ public class User {
 		return myList;
 	}
 	
-	public String[] findUserInDB(String userNumber){
-		return database.findUser(userNumber);
-	}
+
 }

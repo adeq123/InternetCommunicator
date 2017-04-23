@@ -18,7 +18,7 @@ public class DB{
       Class.forName("com.mysql.jdbc.Driver").newInstance();
       String url = "jdbc:mysql://localhost:3306/usersdb";
       String user ="root" ;
-      String pwd = "adrian";
+      String pwd = "";
       conn = DriverManager.getConnection(url, user, pwd);
  
       
@@ -53,7 +53,6 @@ public class DB{
   public void addUser(String userNumber, String userName){
 	  connect();
 	    try {
-			stmt = conn.createStatement();
 			stmt = conn.createStatement();
 		    stmt.executeUpdate(
 		            "INSERT IGNORE INTO tabelOfUsers VALUES ('"+userNumber+"','"+userName+"')");
@@ -104,7 +103,7 @@ public class DB{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
-		      // zwalniamy zasoby, które nie bêd¹ potrzebne
+		      // zwalniamy zasoby, ktï¿½re nie bï¿½dï¿½ potrzebne
 		      if (rs != null) {
 		        try {
 		          rs.close();

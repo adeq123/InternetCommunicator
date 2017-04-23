@@ -25,9 +25,10 @@ public class ArchiveReader implements Reader {
 		String archive = "";
 		String line;
 	
-		while((line = reader.readLine()) != null)
+		while((line = reader.readLine()) != null){
 			archive += line;
-		
+			archive += System.lineSeparator();
+		}
 		reader.close();
 		
 		return archive;

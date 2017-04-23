@@ -1,33 +1,48 @@
 package Communication;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.*;
-import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
+import db.DB;
+
+
+/**
+ * This class model a simple multithread server which run an internet communicator. The server implements thread pool model
+ * @author RoguskiA
+ *Protocol:
+ *"@register" - register a new user on server with number 1 in this case
+ *"@exit" - deregister user from the server
+ *
+ */
 public class Server implements Runnable{
-
-	ServerSocket echoServer;
-	HashMap<Integer, Server.ClientComponent> clientsMap;
-	HashMap<Integer, String> messeagesToBeSentMap;
 	
-	public Server(int port){
-		
-		clientsMap = new HashMap<Integer, Server.ClientComponent>();
-		messeagesToBeSentMap = new HashMap<Integer, String>();
-		
-		
+	private int maxConnections;
+	private ServerSocket pooledServer;
+	private ExecutorService executor;
+	private Socket newClientSocket = null;
+	//server protocol commands
+	public final static String REGISTER = "@register";
+	public final static String EXIT = "@exit";
+	public final static String SEARCH_BY_NO ="@searchByNo";
+	public final static String NO_USER_FOUND ="@noUserFound";
+	public final static String USER_FOUND ="@userFound";
+	public static final String FROM_SERVER = "@fromServer";
+	
+	public Server(int port, int maxConnections){
+		executor = Executors.newFixedThreadPool(maxConnections);
 		try {
-			echoServer = new ServerSocket(port);
+			pooledServer = new ServerSocket(port);
+			//clientComponentHandler();
 			System.out.println("Server started on port number: " + port + " and host "  +
 	                 InetAddress.getLocalHost().getHostName());
 			
 		} catch (IOException e) {
             System.out.println("Acceptance failed on port: " + port);
-            if (echoServer != null && !echoServer.isClosed()) {
+            if (pooledServer != null && !pooledServer.isClosed()) {
 		        try {
-		            echoServer.close();
+		        	pooledServer.close();
 		        } catch (IOException e1)
 		        {
 		            e1.printStackTrace(System.err);
@@ -40,137 +55,35 @@ public class Server implements Runnable{
  
 @Override
 public void run() {
+	
 	while(true){
-		Socket newClientSocket = null;
 		
 		try {
 			System.out.println("Waiting for connection with someone...");
-			newClientSocket = echoServer.accept();
+			newClientSocket = pooledServer.accept();
 			System.out.println("New user connected!");
 			
 			if(newClientSocket == null){
 				System.out.println("Server acceptanse timeout");
 				continue;
+			}else{
+				executor.execute(new ClientComponent(newClientSocket));
 			}
-	
-			ObjectOutputStream out = new ObjectOutputStream(newClientSocket.getOutputStream());
-			ObjectInputStream in = new ObjectInputStream(newClientSocket.getInputStream());
-			
-		
-			ClientComponent newClientComponent = new ClientComponent(in, out);
-			Thread t1 = new Thread(newClientComponent);
-			t1.start();
-			
 		} catch (IOException e) {
 			
-	} //catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-	//		e.printStackTrace();
-		//}
+		} 
 	
 	}
 	
 }
 
-public class ClientComponent implements Runnable{
-
-	
-	private ObjectInputStream in;
-	private ObjectOutputStream out;
-	private Message newMessage;
-	private int UserNumber;
-	
-	public ClientComponent(ObjectInputStream in, ObjectOutputStream out){
-		this.in = in;
-		this.out = out;
-	}
-	
-	public void run(){
-		while(true){
-			try {
-				newMessage = (Message) in.readObject();
-				System.out.println("New message read!" + newMessage.getContent());
-				registerUser(this, Integer.parseInt(newMessage.getFromUser()));
-				sendMessage(newMessage);
-			
-			} catch (ClassNotFoundException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}finally{
-				closeClientStreams();
-			}
-		}
-	}
-	
-	/**
-	 * Registers new user to the list
-	 * @param thisClientComponent
-	 * @param userNumber
-	 */
-	public void registerUser(ClientComponent thisClientComponent, int userNumber){
-		clientsMap.put(userNumber, thisClientComponent);
-		System.out.println("New user registered: " + userNumber);
-	}
-	
- /**
-  * Sends a message to specific user if connected. Otherwise adds it to list of messages to be sent
-  * @param messageToBeSent
-  * @throws IOException
-  */
-	public void sendMessage(Message messageToBeSent) throws IOException{
-		
-		int recipient = Integer.parseInt(messageToBeSent.getToUser());
-		ClientComponent recipientCC = null;
-		String OldMesseage = null;
-		System.out.println("Sending method has started.... recipient:" + recipient);
-		if(clientsMap.containsKey(recipient)){
-			
-			recipientCC = clientsMap.get(recipient);
-			recipientCC.getOutputStream().writeObject(messageToBeSent);
-			recipientCC.getOutputStream().flush();
-			
-		}else{
-			System.out.println("Recipient is not connected. Messeage will be sent later");
-			if(messeagesToBeSentMap.containsKey(recipient)){
-				OldMesseage = messeagesToBeSentMap.get(recipient);
-				messeagesToBeSentMap.remove(recipient);
-				messeagesToBeSentMap.put(recipient, OldMesseage + messageToBeSent.getContent());
-			}else
-				messeagesToBeSentMap.put(recipient, messageToBeSent.getContent());
-		}
-	}
-	
-	/**
-	 * Closes the connection with a user in humanitarian way
-	 * @throws IOException 
-	 */
-	public void closeClientStreams(){
-		try {
-			in.close();
-			out.close();
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-			
-	public ObjectInputStream getInputStream(){
-		return in;
-	}
- 
-	public ObjectOutputStream getOutputStream(){
-		return out;
-	}
-	
-}
-
-
+/**
+ * Creates threads which afterwards will take care of tasks from the pool. Used in the thread pool model.
+ */
 	public static void main(String args[]){
 		
-		Server server = new Server(7779);
-		Thread serverT = new Thread(server);
+		Server server = new Server(7778, 5);
+		Thread serverT = new Thread(server, "Server thread");
 		serverT.start();
 	
 	}
